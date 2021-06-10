@@ -74,7 +74,24 @@ def distill(hyp, opt, device, tb_writer=None, wandb=None):
     model_student = Model(opt.student, ch=3, nc=nc).to(device)
 
     # Distill module
-    distill_module = NLD_Module_YOLOv5(model_teacher, model_student).to(device)
+    if opt.method == 'ABD':
+        distill_module = ABD_Module_YOLOv5(model_teacher, model_student).to(device)
+    elif opt.method == 'ABDg3':
+        distill_module = ABD_Module_YOLOv5(model_teacher, model_student, g3_enable=True).to(device)
+    elif opt.method == 'AGDc' or opt.method == 'AGD':
+        distill_module = AGD_Module_YOLOv5(model_teacher, model_student).to(device)
+    elif opt.method == 'AGDnc':
+        distill_module = AGD_Module_YOLOv5(model_teacher, model_student, channel_enable=False).to(device)
+    elif opt.method == 'CWD':
+        distill_module = CWD_Module_YOLOv5(model_teacher, model_student).to(device)
+    elif opt.method == 'AWD':
+        distill_module = AWD_Module_YOLOv5(model_teacher, model_student).to(device)
+    elif opt.method == 'AT':
+        distill_module = AT_Module_YOLOv5(model_teacher, model_student).to(device)
+    elif opt.method == 'PWD':
+        distill_module = PWD_Module_YOLOv5(model_teacher, model_student, scale=0.5).to(device)
+    elif opt.method == 'NLD':
+        distill_module = NLD_Module_YOLOv5(model_teacher, model_student).to(device)
 
     # Optimizer
     nbs = 64  # nominal batch size
@@ -91,7 +108,7 @@ def distill(hyp, opt, device, tb_writer=None, wandb=None):
     if wandb and wandb.run is None:
         opt.hyp = hyp  # add hyperparameters
         wandb_run = wandb.init(config=opt, resume="allow",
-                               project='YOLOv5_Distill_test' if opt.project == 'runs/distill_test' else Path(opt.project).stem,
+                               project='YOLOv5_Distill' if opt.project == 'runs/distill' else Path(opt.project).stem,
                                name=save_dir.stem,
                                id=ckpt.get('wandb_id') if 'ckpt' in locals() else None)
 
@@ -205,10 +222,11 @@ if __name__ == '__main__':
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--single-cls', action='store_true', help='train multi-class data as single-class')
     parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
-    parser.add_argument('--project', default='runs/distill_test', help='save to project/name')
+    parser.add_argument('--project', default='runs/distill', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--quad', action='store_true', help='quad dataloader')
+    parser.add_argument('--method', type=str, default='AWD', help='specify distillation method')
     opt = parser.parse_args()
 
     opt.world_size = 1
@@ -219,6 +237,7 @@ if __name__ == '__main__':
     opt.data, opt.cfg, opt.hyp = check_file(opt.data), check_file(opt.student), check_file(opt.hyp)  # check files
     assert len(opt.teacher), '--teacher must be specified for teacher network'
     assert len(opt.student), '--student must be specified for student network'
+    assert opt.method in ['ABD', 'ABDg3', 'AGDc', 'AGDnc', 'CWD', 'AWD', 'AT', 'PWD', 'NLD'], '--method %s not supported' % opt.method
     opt.img_size.extend([opt.img_size[-1]] * (2 - len(opt.img_size)))  # extend to 2 sizes (train, test)
     opt.save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok)  # increment run
 

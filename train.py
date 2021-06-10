@@ -135,7 +135,8 @@ def train(hyp, opt, device, tb_writer=None):
     if opt.linear_lr:
         lf = lambda x: (1 - x / (epochs - 1)) * (1.0 - hyp['lrf']) + hyp['lrf']  # linear
     else:
-        lf = one_cycle(1, hyp['lrf'], 300)  # cosine 1->hyp['lrf']
+        # lf = one_cycle(1, hyp['lrf'], 300)  # cosine 1->hyp['lrf']
+        lf = one_cycle(1, hyp['lrf'], epochs)  # cosine 1->hyp['lrf']
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
     # plot_lr_scheduler(optimizer, scheduler, epochs)
 
