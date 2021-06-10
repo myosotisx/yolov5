@@ -17,13 +17,13 @@
 3. 蒸馏
     ``` shell
     python distill.py
-    --teacher <teacher_weights_path>
-    --student <student_cfg_path>
-    --data <data_description_file_path>
-    --workers <num_workers>
-    --batch-size <batch_size>
-    --epochs-distill <epochs_distill>
-    --method <distillation_method>
+        --teacher <teacher_weights_path>
+        --student <student_cfg_path>
+        --data <data_description_file_path>
+        --workers <num_workers>
+        --batch-size <batch_size>
+        --epochs-distill <epochs_distill>
+        --method <distillation_method>
     ```
     例如
     ``` shell
@@ -33,11 +33,11 @@
 4. 训练
     ``` shell
     python train.py
-    --weights <model_weights_path>
-    --data <data_description_file_path>
-    --workers <num_workers>
-    --batch-size <batch_size>
-    --epochs <epochs>
+        --weights <model_weights_path>
+        --data <data_description_file_path>
+        --workers <num_workers>
+        --batch-size <batch_size>
+        --epochs <epochs>
     ```
     例如：
     ``` shell
