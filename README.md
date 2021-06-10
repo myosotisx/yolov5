@@ -1,9 +1,9 @@
-#### 代码描述
+### 代码描述
 - 蒸馏过程: [distill.py](./distill.py)
 - 蒸馏模块定义: [models/distillation_modules.py](models/distillation_modules.py): 
 - 蒸馏参数: [data/hyp.distill.yaml](./data/hyp.distill.yaml)
 
-#### 运行方式
+### 运行方式
 1. 安装依赖库
     ``` shell
     pip install -r requirements.txt
@@ -43,5 +43,5 @@
     ``` shell
     python train.py --weights runs/distill/exp/weights_distill/last_distill.pt --data data/voc.yaml --workers 4 --batch-size 16 --epochs 100
     ```
-#### 结果查看
+### 结果查看
 在[wandb](https://wandb.ai/)实时查看蒸馏、训练过程中Loss变化等。
